@@ -107,13 +107,13 @@ def hangmanGame():
     treatedHangmanWord = normalize('NFKD', hangmanWord).encode(
         'ascii', 'ignore').decode('ascii')
 
-    encryptedWord = ''
+    encryptedWord = []
 
     for letter in treatedHangmanWord:
         if (letter != ' '):
-            encryptedWord += '_'
+            encryptedWord.append('_')
         else:
-            encryptedWord += ' '
+            encryptedWord.append(' ')
 
     hangmanEvolution = ['''
   *---*
@@ -166,13 +166,46 @@ def hangmanGame():
       |
 =========''']
 
+    guesses = set()
     userMissesCounter = 0
-    userGuess = input('Insira uma letra: ')
-    while(not(userGuess.isalpha()) or len(userGuess) != 1):
-        print('\nJogada inválida!\n')
-        userGuess = input('Insira APENAS uma letra: ')
+    isARightGuess = False
 
-    # while (userMissesCounter < 6 or encryptedWord != hangmanWord):
+    print('Letras já usadas >>>', {})
+    hangmanEvolution[0]
+    userGuess = input('Insira uma letra: ').lower()
+
+    while (userMissesCounter < 6):
+        isARightGuess = False
+
+        if (not(userGuess.isalpha()) or userGuess == 'ç' or len(userGuess) != 1):
+            print('\nJogada inválida!\n')
+            userGuess = input('Insira APENAS uma letra: ').lower()
+            continue
+
+        if (userGuess in guesses):
+            print('Você já usou esta letra!\n')
+            userGuess = input('Insira uma letra não usada: ').lower()
+            continue
+
+        guesses.add(userGuess)
+
+        for i in range(0, len(treatedHangmanWord)):
+            if (userGuess == treatedHangmanWord[i]):
+                encryptedWord[i] = userGuess
+                isARightGuess = True
+
+        if (not(isARightGuess)):
+            userMissesCounter += 1
+
+        print('Letras já usadas >>>', guesses)
+        print(hangmanEvolution[userMissesCounter])
+        print(''.join(encryptedWord))
+
+        if (''.join(encryptedWord) == treatedHangmanWord):
+            break
+
+        if (userMissesCounter < 6):
+            userGuess = input('Insira uma letra: ').lower()
 
 
 def mazeGame():
