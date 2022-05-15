@@ -1,0 +1,22 @@
+[
+  {
+    "login": "igor",
+    "password": "tega",
+    "game1": {
+      "pontuation": 0
+    },
+    "game2": {
+      "pontuation": 0
+    }
+  },
+  {
+    "login": "joao",
+    "password": "ah",
+    "game1": {
+      "pontuation": 0
+    },
+    "game2": {
+      "pontuation": 0
+    }
+  }
+]
