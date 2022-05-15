@@ -240,7 +240,114 @@ def mazeGame():
     int:Returning value
 
    """
-    raise Exception('Not implemented!')
+    print('Como o Naruto, este jogo pode ser duro às vezes...')
+    hat = '^'
+    hole = 'O'
+    fieldCharacter = '░'
+    pathCharacter = '*'
+
+    playerPosition = [0, 0]
+    isFinished = False
+
+    def _generateField(height, width):
+        field = []
+        elementsOfTheField = [hole, fieldCharacter, fieldCharacter]
+
+        for i in range(0, height):
+            field.append([])
+
+        for i in range(0, height):
+            for j in range(0, width):
+                field[i].append(elementsOfTheField[randint(0, 2)])
+
+        field[0][0] = pathCharacter
+
+        verticalHatPlace = randint(0, height - 1)
+        horizontalHatPlace = randint(0, width - 1)
+
+        while (verticalHatPlace == 0 or horizontalHatPlace == 0):
+            verticalHatPlace = randint(0, height - 1)
+            horizontalHatPlace = randint(0, width - 1)
+
+        field[verticalHatPlace][horizontalHatPlace] = hat
+
+        return field
+
+    fieldHeightInput = int(input('Entre com a altura do campo: '))
+    fieldWidthInput = int(input('Entre com a largura do campo: '))
+
+    generatedField = _generateField(fieldHeightInput, fieldWidthInput)
+
+    def _isOutside(verticalPosition, horizontalPosition):
+        maxVerticalPosition = len(generatedField) - 1
+        maxHorizontalPosition = len(generatedField[0])
+
+        outsideCondition = verticalPosition > maxVerticalPosition or verticalPosition < 0 or horizontalPosition > maxHorizontalPosition or horizontalPosition < 0
+
+        if (outsideCondition):
+            return True
+
+        return False
+
+    def _isHat(playerLocation):
+        if (playerLocation == hat):
+            return True
+
+        return False
+
+    def _isHole(playerLocation):
+        if (playerLocation == hole):
+            return True
+
+        return False
+
+    def _gameplay(key):
+        if (key.lower() != 'a' and key.lower() != 'w' and key.lower() != 'd' and key.lower() != 's'):
+            print('Você deve usar A, W, D ou S para se mover!')
+
+        if (key.lower() == 'a'):
+            playerPosition[1] -= 1
+
+        if (key.lower() == 'w'):
+            playerPosition[0] -= 1
+
+        if (key.lower() == 'd'):
+            playerPosition[1] += 1
+
+        if(key.lower() == 's'):
+            playerPosition[0] += 1
+
+        verticalPosition = playerPosition[0]
+        horizontalPosition = playerPosition[1]
+
+        if (_isOutside(verticalPosition, horizontalPosition)):
+            print('\nVocê foi jubilado!')
+            return True
+        else:
+            isHat = _isHat(
+                generatedField[verticalPosition][horizontalPosition])
+            isHole = _isHole(
+                generatedField[verticalPosition][horizontalPosition])
+
+            if (isHat):
+                print('Parabéns! Você conseguiu se formar!')
+                return True
+            elif (isHole):
+                print('É, meu caro... A FEI não é fácil!')
+                return True
+            else:
+                generatedField[verticalPosition][horizontalPosition] = pathCharacter
+
+    while(not(isFinished)):
+        for line in generatedField:
+            print(''.join(line))
+
+        playerMovement = input('Qual direção? ')
+
+        if (playerMovement == '0'):
+            break
+
+        isFinished = _gameplay(playerMovement)
 
 
 def scoreboard():
