@@ -68,6 +68,32 @@ def registerUser(newUser, password):
         json.dump(users, members)
 
 
+def hangmanGame():
+    raise Exception('Not implemented!')
+
+
+def mazeGame():
+    raise Exception('Not implemented!')
+
+
+def scoreboard():
+    raise Exception('Not implemented!')
+
+
+def gamesMenu():
+    chooseOption = input(
+        '***************************************\nHora da diversão (ou não)!\n 1 - Jogo da Forca \n 2 - Labirinto InFEInal \n 3 - Placar dos Jogos\n Escolha uma opção: ')
+
+    if (chooseOption == '1'):
+        hangmanGame()
+    elif (chooseOption == '2'):
+        mazeGame()
+    elif (chooseOption == '3'):
+        scoreboard()
+    else:
+        print('Ops! Opção inválida!')
+
+
 def main():
     loginMenu = input(
         'Bem-vindo! \n 1 - Login \n 2 - Registrar-se no sistema \n tecla qualquer - Sair\n Digite: ')
@@ -77,7 +103,7 @@ def main():
         password = input('senha: ')
 
         if (isLoginCorrect(user, password)):
-            print('gamesMenu()')
+            gamesMenu()
         else:
             print('\nUsuário ou senha inválida')
             print('------------------------')
