@@ -1,0 +1,57 @@
+{
+  "heroes": [
+    "batman",
+    "super homem",
+    "homem de ferro",
+    "homem aranha",
+    "capitã marvel",
+    "zamora",
+    "mulher maravilha",
+    "hulk",
+    "demolidor",
+    "flash",
+    "luke cage",
+    "luke skywalker"
+  ],
+  "vilains": [
+    "thanos",
+    "coringa",
+    "darkside",
+    "darth vader",
+    "tcc",
+    "fei",
+    "charada",
+    "loki"
+  ],
+  "names": [
+    "Igor",
+    "João",
+    "Ana",
+    "Juan",
+    "Rodrigo",
+    "Marcelo",
+    "Marcos",
+    "Matheus"
+  ],
+  "animals": [
+    "leão",
+    "peixe",
+    "tigre",
+    "urso",
+    "touro",
+    "vaca",
+    "cavalo",
+    "elefante",
+    "girafa"
+  ],
+  "countries": [
+    "brasil",
+    "estados unidos",
+    "dinamarca",
+    "portugal",
+    "holanda",
+    "senegal",
+    "china",
+    "turquia"
+  ]
+}

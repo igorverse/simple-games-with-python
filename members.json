@@ -3,9 +3,11 @@
     "login": "igor",
     "password": "tega",
     "game1": {
+      "hasPlayed": false,
       "pontuation": 0
     },
     "game2": {
+      "hasPlayed": false,
       "pontuation": 0
     }
   },
@@ -13,9 +15,11 @@
     "login": "joao",
     "password": "ah",
     "game1": {
+      "hasPlayed": false,
       "pontuation": 0
     },
     "game2": {
+      "hasPlayed": false,
       "pontuation": 0
     }
   }
