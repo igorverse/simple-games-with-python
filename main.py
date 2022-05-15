@@ -1,6 +1,20 @@
 import json
 from random import randint
 from unicodedata import normalize
+from threading import Thread
+
+
+def currentUserSession(session):
+    with open('members.json') as members:
+        users = json.load(members)
+
+    for user in users:
+        if (user['login'] == session['login']):
+            user.get(session['game'])['hasPlayed'] = True
+            user.get(session['game'])['pontuation'] += session['pontuation']
+
+            with open('members.json', 'w') as members:
+                json.dump(users, members)
 
 
 def isLoginCorrect(login, password):
@@ -70,7 +84,7 @@ def registerUser(newUser, password):
         json.dump(users, members)
 
 
-def hangmanGame():
+def hangmanGame(session):
     """Summary or Description of the Function
 
     Parameters:
@@ -80,7 +94,6 @@ def hangmanGame():
     int:Returning value
 
    """
-
     with open('hangmanWords.json') as file:
         words = json.load(file)
 
@@ -170,20 +183,22 @@ def hangmanGame():
     userMissesCounter = 0
     isARightGuess = False
 
-    print('Letras já usadas >>>', {})
-    hangmanEvolution[0]
+    print('\nLetras já usadas: ', {})
+    print('Tema: ', wordTheme)
+    print(hangmanEvolution[0])
+    print(''.join(encryptedWord))
     userGuess = input('Insira uma letra: ').lower()
 
     while (userMissesCounter < 6):
         isARightGuess = False
 
         if (not(userGuess.isalpha()) or userGuess == 'ç' or len(userGuess) != 1):
-            print('\nJogada inválida!\n')
+            print('\n!!! Jogada inválida!\n')
             userGuess = input('Insira APENAS uma letra: ').lower()
             continue
 
         if (userGuess in guesses):
-            print('Você já usou esta letra!\n')
+            print('!!! Você já usou esta letra!\n')
             userGuess = input('Insira uma letra não usada: ').lower()
             continue
 
@@ -195,9 +210,11 @@ def hangmanGame():
                 isARightGuess = True
 
         if (not(isARightGuess)):
+            session['pontuation'] -= 1
             userMissesCounter += 1
 
-        print('Letras já usadas >>>', guesses)
+        print('\nLetras já usadas: ', guesses)
+        print('Tema: ', wordTheme)
         print(hangmanEvolution[userMissesCounter])
         print(''.join(encryptedWord))
 
@@ -205,7 +222,12 @@ def hangmanGame():
             break
 
         if (userMissesCounter < 6):
-            userGuess = input('Insira uma letra: ').lower()
+            userGuess = input('\nInsira uma letra: ').lower()
+
+    if (userMissesCounter == 6):
+        print(''.join(encryptedWord) + ' --> ' + treatedHangmanWord)
+
+    currentUserSession(session)
 
 
 def mazeGame():
@@ -234,7 +256,7 @@ def scoreboard():
     raise Exception('Not implemented!')
 
 
-def gamesMenu():
+def gamesMenu(session):
     """Summary or Description of the Function
 
     Parameters:
@@ -248,7 +270,11 @@ def gamesMenu():
         '***************************************\nHora da diversão (ou não)!\n 1 - Jogo da Forca \n 2 - Labirinto InFEInal \n 3 - Placar dos Jogos\n Escolha uma opção: ')
 
     if (chooseOption == '1'):
-        hangmanGame()
+        HANGMAN_GAME_START_PONTUATION = 6
+
+        session['game'] = 'game1'
+        session['pontuation'] = HANGMAN_GAME_START_PONTUATION
+        hangmanGame(session)
     elif (chooseOption == '2'):
         mazeGame()
     elif (chooseOption == '3'):
@@ -266,7 +292,13 @@ def main():
         password = input('senha: ')
 
         if (isLoginCorrect(user, password)):
-            gamesMenu()
+            session = {
+                'login': user,
+                'password': password,
+                'game': None,
+                'pontuation': 0
+            }
+            gamesMenu(session)
         else:
             print('\nUsuário ou senha inválida')
             print('------------------------')
@@ -281,6 +313,7 @@ def main():
 
         registerUser(newUser, password)
         print('Seja bem-vindo, %s!' % (newUser))
+        gamesMenu()
     else:
         print('Até mais! =)')
 
