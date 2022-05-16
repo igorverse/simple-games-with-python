@@ -11,7 +11,6 @@ def currentUserSession(session):
 
     for user in users:
         if (user['login'] == session['login']):
-            user.get(session['game'])['hasPlayed'] = True
             user.get(session['game'])['pontuation'] += session['pontuation']
 
             with open('members.json', 'w') as members:
@@ -447,6 +446,7 @@ def main():
                 'game': None,
                 'pontuation': 0
             }
+
             gamesMenu(session)
         else:
             print('\nUsuário ou senha inválida')
@@ -461,8 +461,16 @@ def main():
             newUser = input('nome de usuário: ')
 
         registerUser(newUser, password)
-        print('Seja bem-vindo, %s!' % (newUser))
-        gamesMenu()
+        print('Seja bem-vindx, %s!' % (newUser))
+
+        session = {
+            'login': newUser,
+            'password': password,
+            'game': None,
+            'pontuation': 0
+        }
+
+        gamesMenu(session)
     else:
         print('Até mais! =)')
 
