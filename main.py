@@ -97,8 +97,15 @@ def hangmanGame(session):
     with open('hangmanWords.json') as file:
         words = json.load(file)
 
-    chooseTheme = input(
-        '1 - Heróis\n 2 - Vilões\n 3 - Nomes\n 4 - Animais\n 5 - Países\n Escolha uma opção de tema: ')
+    themeTable = [[1, 'Heróis'], [2, 'Vilões'], [
+        3, 'Nomes'], [4, 'Animais'], [5, 'Países']]
+    themeHeaders = ['Digite', 'Tema']
+
+    print('\nJogo da Forca')
+    print(tabulate(themeTable, themeHeaders, tablefmt='psql'))
+
+    chooseTheme = input('Escolha uma opção: ')
+
     wordTheme = ''
 
     if (chooseTheme == '1'):
@@ -112,7 +119,7 @@ def hangmanGame(session):
     elif (chooseTheme == '5'):
         wordTheme = 'countries'
     else:
-        raise Exception('Not implemented')
+        print('Opção inválida!')
 
     hangmanWord = (words[wordTheme][randint(
         0, len(words[wordTheme]) - 1)]).lower()
@@ -240,6 +247,7 @@ def mazeGame(session):
     int:Returning value
 
    """
+    print('\nLabirinto InFEInal')
     print('Como o Naruto, este jogo pode ser duro às vezes...')
     hat = '^'
     hole = 'O'
@@ -413,8 +421,15 @@ def gamesMenu(session):
     int:Returning value
 
    """
-    chooseOption = input(
-        '***************************************\nHora da diversão (ou não)!\n 1 - Jogo da Forca \n 2 - Labirinto InFEInal \n 3 - Placar dos Jogos\n Escolha uma opção: ')
+
+    gameOptions = [[1, 'Jogo da Forca'], [
+        2, 'Labirinto InFEInal'], [3, 'Placar dos Jogos']]
+    gameOptionsHeaders = ['Digite', 'Operação']
+
+    print('\nHora da diversão (ou não)! 🔥🔥')
+    print(tabulate(gameOptions, gameOptionsHeaders, tablefmt='psql'))
+
+    chooseOption = input('Escolha uma opção: ')
 
     if (chooseOption == '1'):
         HANGMAN_GAME_START_PONTUATION = 6
@@ -432,8 +447,14 @@ def gamesMenu(session):
 
 
 def main():
-    loginMenu = input(
-        'Bem-vindo! \n 1 - Login \n 2 - Registrar-se no sistema \n tecla qualquer - Sair\n Digite: ')
+    loginOptions = [[1, 'Fazer Login'], [
+        2, 'Registrar-se'], ['Qualquer tecla', 'Sair']]
+    loginHeaders = ['Digite', 'Operação']
+
+    print('\n🖖  Saudações 🖖')
+    print(tabulate(loginOptions, loginHeaders, tablefmt='psql'))
+
+    loginMenu = input('Escolha uma opção: ')
 
     if (loginMenu == '1'):
         user = input('usuário: ')
