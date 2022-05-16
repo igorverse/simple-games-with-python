@@ -8,7 +8,7 @@
     },
     "game2": {
       "hasPlayed": true,
-      "pontuation": 285
+      "pontuation": 0
     }
   },
   {
@@ -16,11 +16,11 @@
     "password": "ah",
     "game1": {
       "hasPlayed": false,
-      "pontuation": 0
+      "pontuation": 10
     },
     "game2": {
       "hasPlayed": false,
-      "pontuation": 0
+      "pontuation": 10
     }
   }
 ]

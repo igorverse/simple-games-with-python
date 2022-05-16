@@ -2,6 +2,7 @@ import json
 from random import randint
 from unicodedata import normalize
 from threading import Thread
+from tabulate import tabulate
 
 
 def currentUserSession(session):
@@ -377,7 +378,30 @@ def scoreboard():
     int:Returning value
 
    """
-    raise Exception('Not implemented!')
+    with open('members.json', encoding='utf-8') as members:
+        users = json.load(members)
+
+    scoreTable = []
+    scoreHeaders = ["Jogador", "Jogo da Forca",
+                    "Labirinto InFEInal", "Pontuação total"]
+
+    for user in users:
+        totalScore = user['game1']['pontuation'] + user['game2']['pontuation']
+        formattedUser = [user['login'], user['game1']
+                         ['pontuation'], user['game2']['pontuation'], totalScore]
+
+        scoreTable.append(formattedUser)
+
+    TOTAL_SCORE_INDEX = 3
+
+    for i in range(0, len(scoreTable)):
+        for j in range(0, len(scoreTable) - i - 1):
+            if (scoreTable[j][TOTAL_SCORE_INDEX] < scoreTable[j+1][TOTAL_SCORE_INDEX]):
+                tmpHolder = scoreTable[j]
+                scoreTable[j] = scoreTable[j+1]
+                scoreTable[j+1] = tmpHolder
+
+    print(tabulate(scoreTable, scoreHeaders, tablefmt="fancy_grid"))
 
 
 def gamesMenu(session):
