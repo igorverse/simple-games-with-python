@@ -230,7 +230,7 @@ def hangmanGame(session):
     currentUserSession(session)
 
 
-def mazeGame():
+def mazeGame(session):
     """Summary or Description of the Function
 
     Parameters:
@@ -258,7 +258,9 @@ def mazeGame():
 
         for i in range(0, height):
             for j in range(0, width):
-                field[i].append(elementsOfTheField[randint(0, 2)])
+                randomElementOfTheField = elementsOfTheField[randint(0, 2)]
+
+                field[i].append(randomElementOfTheField)
 
         field[0][0] = pathCharacter
 
@@ -275,6 +277,11 @@ def mazeGame():
 
     fieldHeightInput = int(input('Entre com a altura do campo: '))
     fieldWidthInput = int(input('Entre com a largura do campo: '))
+
+    while (fieldHeightInput < 3 or fieldWidthInput < 3):
+        print('\n A altura e largura devem ser maior que 2!')
+        fieldHeightInput = int(input('Entre com a altura do campo: '))
+        fieldWidthInput = int(input('Entre com a largura do campo: '))
 
     generatedField = _generateField(fieldHeightInput, fieldWidthInput)
 
@@ -330,24 +337,34 @@ def mazeGame():
                 generatedField[verticalPosition][horizontalPosition])
 
             if (isHat):
+                MAZE_PONTUATION = playerPosition[0] + playerPosition[1]
+
+                session['pontuation'] += MAZE_PONTUATION
+
                 print('Parabéns! Você conseguiu se formar!')
+                print('Pontuação final: ', session['pontuation'])
                 return True
             elif (isHole):
                 print('É, meu caro... A FEI não é fácil!')
+                print('Pontuação final: ', session['pontuation'])
                 return True
             else:
                 generatedField[verticalPosition][horizontalPosition] = pathCharacter
+
+    print('Use A, W, D ou S para se mover!')
 
     while(not(isFinished)):
         for line in generatedField:
             print(''.join(line))
 
-        playerMovement = input('Qual direção? ')
+        playerMovement = input('\nQual direção? \n')
 
         if (playerMovement == '0'):
             break
 
         isFinished = _gameplay(playerMovement)
+
+    currentUserSession(session)
 
 
 def scoreboard():
@@ -383,7 +400,8 @@ def gamesMenu(session):
         session['pontuation'] = HANGMAN_GAME_START_PONTUATION
         hangmanGame(session)
     elif (chooseOption == '2'):
-        mazeGame()
+        session['game'] = 'game2'
+        mazeGame(session)
     elif (chooseOption == '3'):
         scoreboard()
     else:

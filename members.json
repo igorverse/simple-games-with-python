@@ -1,1 +1,26 @@
-[{"login": "igor", "password": "tega", "game1": {"hasPlayed": true, "pontuation": 10}, "game2": {"hasPlayed": false, "pontuation": 0}}, {"login": "joao", "password": "ah", "game1": {"hasPlayed": false, "pontuation": 0}, "game2": {"hasPlayed": false, "pontuation": 0}}]
+[
+  {
+    "login": "igor",
+    "password": "tega",
+    "game1": {
+      "hasPlayed": true,
+      "pontuation": 10
+    },
+    "game2": {
+      "hasPlayed": true,
+      "pontuation": 285
+    }
+  },
+  {
+    "login": "joao",
+    "password": "ah",
+    "game1": {
+      "hasPlayed": false,
+      "pontuation": 0
+    },
+    "game2": {
+      "hasPlayed": false,
+      "pontuation": 0
+    }
+  }
+]
