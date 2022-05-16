@@ -30,11 +30,23 @@ def isLoginCorrect(login, password):
     with open('members.json', encoding='utf-8') as members:
         users = json.load(members)
 
+    isUserFounded = False
+
     for user in users:
         if (user['login'] == login and user['password'] == password):
-            return True
+            session = {
+                'login': user,
+                'password': password,
+                'game': None,
+                'pontuation': 0
+            }
 
-    return False
+            Thread(target=gamesMenu, args=(session, )).start()
+            isUserFounded = True
+
+    if (not(isUserFounded)):
+        print('\n🤦 Usuário não encontrado!')
+        Thread(target=main).start()
 
 
 def isUserAlreadyRegistered(login):
@@ -57,6 +69,30 @@ def isUserAlreadyRegistered(login):
     return False
 
 
+def keepPlaying(session):
+    """Summary or Description of the Function
+
+    Parameters:
+    argument1 (int): Description of arg1
+
+    Returns:
+    int:Returning value
+
+   """
+    print('\nQuer continuar jogando?')
+    options = [[1, 'Continuar'], ['Qualquer tecla', 'Sair']]
+    headers = ['Digite', 'Operação']
+
+    print(tabulate(options, headers, tablefmt="psql"))
+
+    userAnswer = input('Escolha uma opção: ')
+
+    if (userAnswer == '1'):
+        Thread(target=gamesMenu, args=(session, )).start()
+    else:
+        print('👋 Até a próxima!')
+
+
 def registerUser(newUser, password):
     """Summary or Description of the Function
 
@@ -70,15 +106,15 @@ def registerUser(newUser, password):
     with open('members.json') as members:
         users = json.load(members)
 
-    users.append({"login": newUser,
+    users.append({"login": newUser.lower(),
                   "password": password,
                   "game1": {
                       "pontuation": 0
-                  },
-                  "game2": {
+    },
+        "game2": {
                       "pontuation": 0
-                  }
-                  })
+    }
+    })
 
     with open('members.json', 'w') as members:
         json.dump(users, members)
@@ -98,7 +134,7 @@ def hangmanGame(session):
         words = json.load(file)
 
     themeTable = [[1, 'Heróis'], [2, 'Vilões'], [
-        3, 'Nomes'], [4, 'Animais'], [5, 'Países']]
+        3, 'Nomes'], [4, 'Animais'], [5, 'Países'], ['Qualquer tecla', 'Encerrar sessão']]
     themeHeaders = ['Digite', 'Tema']
 
     print('\nJogo da Forca')
@@ -119,7 +155,7 @@ def hangmanGame(session):
     elif (chooseTheme == '5'):
         wordTheme = 'countries'
     else:
-        print('Opção inválida!')
+        print('👋 Até a próxima!')
 
     hangmanWord = (words[wordTheme][randint(
         0, len(words[wordTheme]) - 1)]).lower()
@@ -200,12 +236,12 @@ def hangmanGame(session):
         isARightGuess = False
 
         if (not(userGuess.isalpha()) or userGuess == 'ç' or len(userGuess) != 1):
-            print('\n!!! Jogada inválida!\n')
+            print('\n⚠️ Jogada inválida!\n')
             userGuess = input('Insira APENAS uma letra: ').lower()
             continue
 
         if (userGuess in guesses):
-            print('!!! Você já usou esta letra!\n')
+            print('⚠️ Você já usou esta letra!\n')
             userGuess = input('Insira uma letra não usada: ').lower()
             continue
 
@@ -234,7 +270,10 @@ def hangmanGame(session):
     if (userMissesCounter == 6):
         print(''.join(encryptedWord) + ' --> ' + treatedHangmanWord)
 
-    currentUserSession(session)
+    print('O jogo acabou! Sua pontuação: ', session['pontuation'])
+
+    Thread(target=currentUserSession, args=(session, )).start()
+    Thread(target=keepPlaying, args=(session, )).start()
 
 
 def mazeGame(session):
@@ -287,7 +326,7 @@ def mazeGame(session):
     fieldWidthInput = int(input('Entre com a largura do campo: '))
 
     while (fieldHeightInput < 3 or fieldWidthInput < 3):
-        print('\n A altura e largura devem ser maior que 2!')
+        print('\n ⚠️ A altura e largura devem ser maior que 2!')
         fieldHeightInput = int(input('Entre com a altura do campo: '))
         fieldWidthInput = int(input('Entre com a largura do campo: '))
 
@@ -318,7 +357,7 @@ def mazeGame(session):
 
     def _gameplay(key):
         if (key.lower() != 'a' and key.lower() != 'w' and key.lower() != 'd' and key.lower() != 's'):
-            print('Você deve usar A, W, D ou S para se mover!')
+            print('⚠️ Você deve usar A, W, D ou S para se mover!')
 
         if (key.lower() == 'a'):
             playerPosition[1] -= 1
@@ -336,7 +375,7 @@ def mazeGame(session):
         horizontalPosition = playerPosition[1]
 
         if (_isOutside(verticalPosition, horizontalPosition)):
-            print('\nVocê foi jubilado!')
+            print('\nVocê foi jubilado! 🤦')
             return True
         else:
             isHat = _isHat(
@@ -349,17 +388,17 @@ def mazeGame(session):
 
                 session['pontuation'] += MAZE_PONTUATION
 
-                print('Parabéns! Você conseguiu se formar!')
+                print('Parabéns! Você conseguiu se formar! 🎓')
                 print('Pontuação final: ', session['pontuation'])
                 return True
             elif (isHole):
-                print('É, meu caro... A FEI não é fácil!')
+                print('É, jovem... A FEI não é fácil! 🤦')
                 print('Pontuação final: ', session['pontuation'])
                 return True
             else:
                 generatedField[verticalPosition][horizontalPosition] = pathCharacter
 
-    print('Use A, W, D ou S para se mover!')
+    print('⚠️ Use A, W, D ou S para se mover!')
 
     while(not(isFinished)):
         for line in generatedField:
@@ -372,10 +411,11 @@ def mazeGame(session):
 
         isFinished = _gameplay(playerMovement)
 
-    currentUserSession(session)
+    Thread(target=currentUserSession, args=(session, )).start()
+    Thread(target=keepPlaying, args=(session, )).start()
 
 
-def scoreboard():
+def scoreboard(session):
     """Summary or Description of the Function
 
     Parameters:
@@ -408,7 +448,12 @@ def scoreboard():
                 scoreTable[j] = scoreTable[j+1]
                 scoreTable[j+1] = tmpHolder
 
+    scoreTable[0][0] = scoreTable[0][0].upper()
+    scoreTable[0][0] += ' ᕦ(ò_óˇ)'
+
     print(tabulate(scoreTable, scoreHeaders, tablefmt="fancy_grid"))
+
+    Thread(target=keepPlaying, args=(session, )).start()
 
 
 def gamesMenu(session):
@@ -421,9 +466,11 @@ def gamesMenu(session):
     int:Returning value
 
    """
+    mazeGameThread = Thread(target=mazeGame, args=(session, ))
+    hangmanGameThread = Thread(target=hangmanGame, args=(session, ))
 
     gameOptions = [[1, 'Jogo da Forca'], [
-        2, 'Labirinto InFEInal'], [3, 'Placar dos Jogos']]
+        2, 'Labirinto InFEInal'], [3, 'Placar dos Jogos'], ['Qualquer tecla', 'Encerrar sessão']]
     gameOptionsHeaders = ['Digite', 'Operação']
 
     print('\nHora da diversão (ou não)! 🔥🔥')
@@ -436,14 +483,16 @@ def gamesMenu(session):
 
         session['game'] = 'game1'
         session['pontuation'] = HANGMAN_GAME_START_PONTUATION
-        hangmanGame(session)
+
+        hangmanGameThread.start()
     elif (chooseOption == '2'):
         session['game'] = 'game2'
-        mazeGame(session)
+
+        mazeGameThread.start()
     elif (chooseOption == '3'):
-        scoreboard()
+        scoreboard(session)
     else:
-        print('Ops! Opção inválida!')
+        print('👋 Até a próxima!')
 
 
 def main():
@@ -460,29 +509,18 @@ def main():
         user = input('usuário: ')
         password = input('senha: ')
 
-        if (isLoginCorrect(user, password)):
-            session = {
-                'login': user,
-                'password': password,
-                'game': None,
-                'pontuation': 0
-            }
-
-            gamesMenu(session)
-        else:
-            print('\nUsuário ou senha inválida')
-            print('------------------------')
-            main()
+        Thread(target=isLoginCorrect, args=(user, password, )).start()
     elif (loginMenu == '2'):
         newUser = input('nome de usuário: ')
         password = input('senha: ')
 
         while (isUserAlreadyRegistered(newUser)):
-            print('Este nome de usuário já foi registrado. Tente um outro...')
+            print('⚠️ Este nome de usuário já foi registrado. Tente um outro...')
             newUser = input('nome de usuário: ')
 
-        registerUser(newUser, password)
-        print('Seja bem-vindx, %s!' % (newUser))
+        Thread(target=registerUser, args=(newUser, password,)).start()
+
+        print('Seja bem-vindx, %s! 🚀🚀🚀' % (newUser))
 
         session = {
             'login': newUser,
@@ -493,7 +531,7 @@ def main():
 
         gamesMenu(session)
     else:
-        print('Até mais! =)')
+        print('👋 Até a próxima!')
 
 
 main()
