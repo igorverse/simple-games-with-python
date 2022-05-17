@@ -1,8 +1,10 @@
 import json
+from os.path import exists
 from random import randint
-from unicodedata import normalize
-from threading import Thread
 from tabulate import tabulate
+import time
+from threading import Thread
+from unicodedata import normalize
 
 
 def currentUserSession(session):
@@ -532,4 +534,15 @@ def main():
         print('\n👋 Até a próxima!')
 
 
-main()
+if (exists('members.json')):
+    main()
+else:
+    membersFile = open('members.json', 'w')
+    membersFile.write('[]')
+    membersFile.close()
+
+    print('Arquivo para registro de membros está sendo criado...')
+
+    time.sleep(3)
+
+    main()
