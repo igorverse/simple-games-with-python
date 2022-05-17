@@ -8,12 +8,21 @@ from unicodedata import normalize
 
 
 def currentUserSession(session):
+    """It controls the current user session updating the user score in games
+
+    Parameters:
+    session (dict): current user's information
+
+    Returns:
+    void function
+
+   """
     with open('members.json') as members:
         users = json.load(members)
 
     for user in users:
         if (user['login'] == session['login']):
-            user.get(session['game'])['pontuation'] += session['pontuation']
+            user.get(session['game'])['score'] += session['score']
 
             with open('members.json', 'w') as members:
                 json.dump(users, members)
@@ -22,13 +31,14 @@ def currentUserSession(session):
 
 
 def isLoginCorrect(login, password):
-    """Summary or Description of the Function
+    """It authenticates the user and start game menu thread or call main again.
 
     Parameters:
-    argument1 (int): Description of arg1
+    login (string): username to verify
+    password (string): password to verify
 
     Returns:
-    int:Returning value
+    void function
 
    """
     with open('members.json', encoding='utf-8') as members:
@@ -42,7 +52,7 @@ def isLoginCorrect(login, password):
                 'login': user['login'],
                 'password': user['password'],
                 'game': None,
-                'pontuation': 0
+                'score': 0
             }
 
             Thread(target=gamesMenu, args=(session, )).start()
@@ -54,13 +64,13 @@ def isLoginCorrect(login, password):
 
 
 def isUserAlreadyRegistered(login):
-    """Summary or Description of the Function
+    """It verifies if a username is already taken.
 
     Parameters:
-    argument1 (int): Description of arg1
+    login (string): username to verify
 
     Returns:
-    int:Returning value
+    boolean:Returning True or False
 
    """
     with open('members.json', encoding='utf-8') as members:
@@ -74,13 +84,13 @@ def isUserAlreadyRegistered(login):
 
 
 def keepPlaying(session):
-    """Summary or Description of the Function
+    """It check if the user wants to keep playing or wants stop session
 
     Parameters:
-    argument1 (int): Description of arg1
+    session (dict): current user's information
 
     Returns:
-    int:Returning value
+    void function
 
    """
     print('\nQuer continuar jogando?')
@@ -98,13 +108,14 @@ def keepPlaying(session):
 
 
 def registerUser(newUser, password):
-    """Summary or Description of the Function
+    """It register the user
 
     Parameters:
-    argument1 (int): Description of arg1
+    newUser (string): username to record
+    password (string): password to record
 
     Returns:
-    int:Returning value
+    void function
 
    """
     with open('members.json') as members:
@@ -113,10 +124,10 @@ def registerUser(newUser, password):
     users.append({"login": newUser.lower(),
                   "password": password,
                   "game1": {
-                      "pontuation": 0
+                      "score": 0
     },
         "game2": {
-                      "pontuation": 0
+                      "score": 0
     }
     })
 
@@ -125,13 +136,13 @@ def registerUser(newUser, password):
 
 
 def hangmanGame(session):
-    """Summary or Description of the Function
+    """It implements and execute a hangman game
 
     Parameters:
-    argument1 (int): Description of arg1
+    session (dict): current user's information
 
     Returns:
-    int:Returning value
+    void function
 
    """
     with open('hangmanWords.json') as file:
@@ -257,7 +268,7 @@ def hangmanGame(session):
                 isARightGuess = True
 
         if (not(isARightGuess)):
-            session['pontuation'] -= 1
+            session['score'] -= 1
             userMissesCounter += 1
 
         print('\nLetras já usadas: ', guesses)
@@ -274,19 +285,19 @@ def hangmanGame(session):
     if (userMissesCounter == 6):
         print(''.join(encryptedWord) + ' --> ' + treatedHangmanWord)
 
-    print('O jogo acabou! Sua pontuação: ', session['pontuation'])
+    print('O jogo acabou! Sua pontuação: ', session['score'])
 
     Thread(target=currentUserSession, args=(session, )).start()
 
 
 def mazeGame(session):
-    """Summary or Description of the Function
+    """it implements and execute a maze game
 
     Parameters:
-    argument1 (int): Description of arg1
+    session (dict): current user's information
 
     Returns:
-    int:Returning value
+    void function
 
    """
     print('\nLabirinto InFEInal')
@@ -387,16 +398,16 @@ def mazeGame(session):
                 generatedField[verticalPosition][horizontalPosition])
 
             if (isHat):
-                MAZE_PONTUATION = playerPosition[0] + playerPosition[1]
+                MAZE_SCORE = playerPosition[0] + playerPosition[1]
 
-                session['pontuation'] += MAZE_PONTUATION
+                session['score'] += MAZE_SCORE
 
                 print('Parabéns! Você conseguiu se formar! 🎓')
-                print('Pontuação final: ', MAZE_PONTUATION)
+                print('Pontuação final: ', MAZE_SCORE)
                 return True
             elif (isHole):
                 print('É, jovem... A FEI não é fácil! 🤦')
-                print('Pontuação final: ', session['pontuation'])
+                print('Pontuação final: ', session['score'])
                 return True
             else:
                 generatedField[verticalPosition][horizontalPosition] = pathCharacter
@@ -418,13 +429,13 @@ def mazeGame(session):
 
 
 def scoreboard(session):
-    """Summary or Description of the Function
+    """It implements the scoreboard functionality
 
     Parameters:
-    argument1 (int): Description of arg1
+    session (dict): current user's information
 
     Returns:
-    int:Returning value
+    void function
 
    """
     with open('members.json', encoding='utf-8') as members:
@@ -435,9 +446,9 @@ def scoreboard(session):
                     "Labirinto InFEInal", "Pontuação total"]
 
     for user in users:
-        totalScore = user['game1']['pontuation'] + user['game2']['pontuation']
+        totalScore = user['game1']['score'] + user['game2']['score']
         formattedUser = [user['login'], user['game1']
-                         ['pontuation'], user['game2']['pontuation'], totalScore]
+                         ['score'], user['game2']['score'], totalScore]
 
         scoreTable.append(formattedUser)
 
@@ -459,13 +470,13 @@ def scoreboard(session):
 
 
 def gamesMenu(session):
-    """Summary or Description of the Function
+    """It implements a game menu to allow user chooses which game to play
 
     Parameters:
-    argument1 (int): Description of arg1
+    session (dict): current user's information
 
     Returns:
-    int:Returning value
+    void function
 
    """
 
@@ -479,10 +490,10 @@ def gamesMenu(session):
     chooseOption = input('Escolha uma opção: ')
 
     if (chooseOption == '1'):
-        HANGMAN_GAME_START_PONTUATION = 6
+        HANGMAN_GAME_START_SCORE = 6
 
         session['game'] = 'game1'
-        session['pontuation'] = HANGMAN_GAME_START_PONTUATION
+        session['score'] = HANGMAN_GAME_START_SCORE
 
         Thread(target=hangmanGame, args=(session, )).start()
     elif (chooseOption == '2'):
@@ -526,7 +537,7 @@ def main():
             'login': newUser,
             'password': password,
             'game': None,
-            'pontuation': 0
+            'score': 0
         }
 
         gamesMenu(session)
