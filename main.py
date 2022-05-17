@@ -16,6 +16,8 @@ def currentUserSession(session):
             with open('members.json', 'w') as members:
                 json.dump(users, members)
 
+    Thread(target=keepPlaying, args=(session, )).start()
+
 
 def isLoginCorrect(login, password):
     """Summary or Description of the Function
@@ -35,8 +37,8 @@ def isLoginCorrect(login, password):
     for user in users:
         if (user['login'] == login and user['password'] == password):
             session = {
-                'login': user,
-                'password': password,
+                'login': user['login'],
+                'password': user['password'],
                 'game': None,
                 'pontuation': 0
             }
@@ -80,7 +82,7 @@ def keepPlaying(session):
 
    """
     print('\nQuer continuar jogando?')
-    options = [[1, 'Continuar'], ['Qualquer tecla', 'Sair']]
+    options = [[1, 'Continuar'], ['Qualquer tecla', 'Encerrar sessão']]
     headers = ['Digite', 'Operação']
 
     print(tabulate(options, headers, tablefmt="psql"))
@@ -90,7 +92,7 @@ def keepPlaying(session):
     if (userAnswer == '1'):
         Thread(target=gamesMenu, args=(session, )).start()
     else:
-        print('👋 Até a próxima!')
+        Thread(target=main).start()
 
 
 def registerUser(newUser, password):
@@ -155,7 +157,7 @@ def hangmanGame(session):
     elif (chooseTheme == '5'):
         wordTheme = 'countries'
     else:
-        print('👋 Até a próxima!')
+        Thread(target=main).start()
 
     hangmanWord = (words[wordTheme][randint(
         0, len(words[wordTheme]) - 1)]).lower()
@@ -273,7 +275,6 @@ def hangmanGame(session):
     print('O jogo acabou! Sua pontuação: ', session['pontuation'])
 
     Thread(target=currentUserSession, args=(session, )).start()
-    Thread(target=keepPlaying, args=(session, )).start()
 
 
 def mazeGame(session):
@@ -357,7 +358,7 @@ def mazeGame(session):
 
     def _gameplay(key):
         if (key.lower() != 'a' and key.lower() != 'w' and key.lower() != 'd' and key.lower() != 's'):
-            print('⚠️ Você deve usar A, W, D ou S para se mover!')
+            print('\n⚠️ Você deve usar A, W, D ou S para se mover!\n')
 
         if (key.lower() == 'a'):
             playerPosition[1] -= 1
@@ -389,7 +390,7 @@ def mazeGame(session):
                 session['pontuation'] += MAZE_PONTUATION
 
                 print('Parabéns! Você conseguiu se formar! 🎓')
-                print('Pontuação final: ', session['pontuation'])
+                print('Pontuação final: ', MAZE_PONTUATION)
                 return True
             elif (isHole):
                 print('É, jovem... A FEI não é fácil! 🤦')
@@ -398,7 +399,7 @@ def mazeGame(session):
             else:
                 generatedField[verticalPosition][horizontalPosition] = pathCharacter
 
-    print('⚠️ Use A, W, D ou S para se mover!')
+    print('\nUse A, W, D ou S para se mover!\n')
 
     while(not(isFinished)):
         for line in generatedField:
@@ -412,7 +413,6 @@ def mazeGame(session):
         isFinished = _gameplay(playerMovement)
 
     Thread(target=currentUserSession, args=(session, )).start()
-    Thread(target=keepPlaying, args=(session, )).start()
 
 
 def scoreboard(session):
@@ -466,8 +466,6 @@ def gamesMenu(session):
     int:Returning value
 
    """
-    mazeGameThread = Thread(target=mazeGame, args=(session, ))
-    hangmanGameThread = Thread(target=hangmanGame, args=(session, ))
 
     gameOptions = [[1, 'Jogo da Forca'], [
         2, 'Labirinto InFEInal'], [3, 'Placar dos Jogos'], ['Qualquer tecla', 'Encerrar sessão']]
@@ -484,15 +482,15 @@ def gamesMenu(session):
         session['game'] = 'game1'
         session['pontuation'] = HANGMAN_GAME_START_PONTUATION
 
-        hangmanGameThread.start()
+        Thread(target=hangmanGame, args=(session, )).start()
     elif (chooseOption == '2'):
         session['game'] = 'game2'
 
-        mazeGameThread.start()
+        Thread(target=mazeGame, args=(session, )).start()
     elif (chooseOption == '3'):
         scoreboard(session)
     else:
-        print('👋 Até a próxima!')
+        Thread(target=main).start()
 
 
 def main():
@@ -531,7 +529,7 @@ def main():
 
         gamesMenu(session)
     else:
-        print('👋 Até a próxima!')
+        print('\n👋 Até a próxima!')
 
 
 main()
