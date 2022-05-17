@@ -497,7 +497,10 @@ def gamesMenu(session):
 
         Thread(target=hangmanGame, args=(session, )).start()
     elif (chooseOption == '2'):
+        MAZE_GAME_START_SCORE = 0
+
         session['game'] = 'game2'
+        session['score'] = MAZE_GAME_START_SCORE
 
         Thread(target=mazeGame, args=(session, )).start()
     elif (chooseOption == '3'):
